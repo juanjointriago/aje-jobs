@@ -57,55 +57,74 @@
 /* Tablet - Tamaño más controlado */
 @media (min-width: 640px) {
   .card-container {
-    width: 80vw;
-    max-width: 600px;
-    height: 85vh;
-    max-height: 85vh;
-    min-height: 600px;
+    width: 85vw;
+    max-width: 700px;
+    height: 90vh;
+    max-height: 90vh;
+    min-height: 650px;
+    
+    /* Sin padding extra en desktop */
+    padding: 0;
   }
 }
 
 /* Desktop pequeño */
 @media (min-width: 768px) {
   .card-container {
-    width: 75vw;
-    max-width: 700px;
-    height: 80vh;
-    max-height: 80vh;
-    min-height: 650px;
+    width: 80vw;
+    max-width: 800px;
+    height: 85vh;
+    max-height: 85vh;
+    min-height: 700px;
+    padding: 0;
   }
 }
 
 /* Desktop mediano */
 @media (min-width: 1024px) {
   .card-container {
-    width: 70vw;
-    max-width: 800px;
-    height: 85vh;
-    max-height: 85vh;
-    min-height: 700px;
+    width: 75vw;
+    max-width: 950px;
+    height: 90vh;
+    max-height: 90vh;
+    min-height: 750px;
+    padding: 0;
   }
 }
 
 /* Desktop extra grande */
 @media (min-width: 1280px) {
   .card-container {
-    width: 65vw;
-    max-width: 900px;
-    height: 80vh;
-    max-height: 80vh;
-    min-height: 750px;
+    width: 70vw;
+    max-width: 1100px;
+    height: 85vh;
+    max-height: 85vh;
+    min-height: 800px;
+    padding: 0;
   }
 }
 
 /* Desktop ultra amplio */
 @media (min-width: 1536px) {
   .card-container {
+    width: 65vw;
+    max-width: 1300px;
+    height: 80vh;
+    max-height: 80vh;
+    min-height: 850px;
+    padding: 0;
+  }
+}
+
+/* Desktop extra ultra amplio */
+@media (min-width: 1920px) {
+  .card-container {
     width: 60vw;
-    max-width: 1000px;
+    max-width: 1500px;
     height: 75vh;
     max-height: 75vh;
-    min-height: 800px;
+    min-height: 900px;
+    padding: 0;
   }
 }
 
@@ -145,6 +164,26 @@
   }
 }
 
+/* Sombras aún más dramáticas en desktop grande */
+@media (min-width: 1024px) {
+  .card-face {
+    box-shadow: 
+      0 35px 70px -15px rgba(0, 0, 0, 0.3),
+      0 15px 35px -8px rgba(0, 0, 0, 0.15),
+      0 5px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Sombras premium en pantallas ultra grandes */
+@media (min-width: 1536px) {
+  .card-face {
+    box-shadow: 
+      0 50px 100px -20px rgba(0, 0, 0, 0.35),
+      0 25px 50px -12px rgba(0, 0, 0, 0.2),
+      0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  }
+}
+
 .card-front {
   /* Sin fondo fijo - se controla desde React */
   background: transparent;
@@ -164,6 +203,28 @@
 
   .card-container:hover .card.flipped {
     transform: rotateY(180deg) scale(1.02);
+  }
+}
+
+/* Efectos hover mejorados para desktop grande */
+@media (min-width: 1024px) and (hover: hover) {
+  .card-container:hover .card {
+    transform: scale(1.03) translateY(-5px);
+  }
+
+  .card-container:hover .card.flipped {
+    transform: rotateY(180deg) scale(1.03) translateY(-5px);
+  }
+}
+
+/* Efectos hover premium para pantallas ultra grandes */
+@media (min-width: 1536px) and (hover: hover) {
+  .card-container:hover .card {
+    transform: scale(1.04) translateY(-8px);
+  }
+
+  .card-container:hover .card.flipped {
+    transform: rotateY(180deg) scale(1.04) translateY(-8px);
   }
 }
 

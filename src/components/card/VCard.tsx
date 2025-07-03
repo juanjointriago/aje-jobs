@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import "../../App.css";
 import {
   FiRotateCw,
@@ -12,8 +13,17 @@ import {
 import { HiOutlineCake } from "react-icons/hi";
 import { MdEmail, MdPhone, MdLocationOn } from "react-icons/md";
 import { IoGlobeOutline } from "react-icons/io5";
+import { useUser } from "../../hooks/useUser";
+import { NotFound } from "../NotFound";
+import { testFirestoreRules } from "../../utils/testFirestoreRules";
 
 export const VCard = () => {
+  const { uid } = useParams<{ uid: string }>();
+  
+  // Si el UID es "demo", usar el UID real de Firebase
+  const actualUid = uid === "demo" ? "QcsoVRnPirWZeFWgwm2Q" : uid;
+  
+  const { userData, loading, error } = useUser(actualUid);
   const [isFlipped, setIsFlipped] = useState(false);
   const [activeTab, setActiveTab] = useState("contact");
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -36,12 +46,24 @@ export const VCard = () => {
 
   const handleLinkedInClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open("https://www.linkedin.com/in/pedro-director", "_blank");
+    const linkedinUrl = userData?.LinkedInUrl || "https://www.linkedin.com/";
+    window.open(linkedinUrl, "_blank");
   };
 
   const toggleDarkMode = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDarkMode(!isDarkMode);
+  };
+
+  const handleTestFirestore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('🧪 Iniciando pruebas de Firestore...');
+    testFirestoreRules();
+  };
+
+  // Función para mostrar valor o guiones
+  const displayValue = (value: string | undefined, fallback = "-------") => {
+    return value || fallback;
   };
 
   useEffect(() => {
@@ -57,6 +79,46 @@ export const VCard = () => {
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
+  // Si está cargando, mostrar skeleton
+  if (loading) {
+    return (
+      <div
+        className={`min-h-screen transition-colors duration-300 ${
+          isDarkMode
+            ? "bg-gradient-to-br from-gray-900 to-black"
+            : "bg-gradient-to-br from-gray-100 to-gray-200"
+        } flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 xl:p-12`}
+      >
+        <div className="card-container w-full h-full">
+          <div className="card">
+            <div className="card-face card-front">
+              <div
+                className={`h-full flex flex-col items-center justify-center relative px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+                  isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
+                }`}
+              >
+                <div className="animate-pulse text-center">
+                  <div className="w-16 h-16 bg-gray-300 rounded-2xl mx-auto mb-8"></div>
+                  <div className="h-8 bg-gray-300 rounded w-48 mx-auto mb-4"></div>
+                  <div className="h-4 bg-gray-300 rounded w-32 mx-auto"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si hay un error específico de "Usuario no encontrado", mostrar página NotFound
+  if (error === "Usuario no encontrado") {
+    return <NotFound message="Usuario no encontrado" />;
+  }
+
+  // Si hay otro tipo de error, mostrar página NotFound con mensaje genérico
+  if (error && !loading) {
+    return <NotFound message="Error al cargar la información" />;
+  }
 
  const renderTabContent = () => {
     switch (activeTab) {
@@ -69,14 +131,15 @@ export const VCard = () => {
                   isDarkMode ? "text-white" : "text-gray-800"
                 }`}
               >
-                Pedro García
+                {displayValue(userData?.Nombres)}{" "}
+                {displayValue(userData?.Apellidos)}
               </h1>
               <p
                 className={`text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-light opacity-80 ${
                   isDarkMode ? "text-white" : "text-gray-600"
                 }`}
               >
-                Director De Tienda
+                {displayValue(userData?.Cargo, "Cargo no disponible")}
               </p>
               <div className="birthday-info inline-flex items-center space-x-3 mt-4">
                 <HiOutlineCake className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-yellow-400" />
@@ -93,7 +156,7 @@ export const VCard = () => {
                       isDarkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    15 de Marzo, 1985
+                    {displayValue(userData?.FechaNac, "No disponible")}
                   </p>
                 </div>
               </div>
@@ -118,7 +181,7 @@ export const VCard = () => {
                     isDarkMode ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  UnityStores
+                  {displayValue(userData?.Empresa, "Empresa no disponible")}
                 </h2>
               </div>
               <div className="space-y-2">
@@ -134,7 +197,7 @@ export const VCard = () => {
                     isDarkMode ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  Director de Tienda
+                  {displayValue(userData?.Cargo, "Cargo no disponible")}
                 </p>
               </div>
               <div
@@ -147,7 +210,7 @@ export const VCard = () => {
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
-                  Miembro desde 2019
+                  Miembro desde {displayValue(userData?.CreatedAt, "2019")}
                 </p>
               </div>
             </div>
@@ -178,7 +241,7 @@ export const VCard = () => {
                 <FiLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
                 <div className="text-left flex-1">
                   <p className="text-sm sm:text-base font-medium">LinkedIn</p>
-                  <p className="text-xs opacity-70">@pedro-director</p>
+                  <p className="text-xs opacity-70">{displayValue(userData?.LinkedInUrl, "@pedro-director")}</p>
                 </div>
                 <FiExternalLink className="w-4 h-4 opacity-60" />
               </button>
@@ -244,6 +307,21 @@ export const VCard = () => {
             >
               <FiRotateCw className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
+
+            {/* Botón de Prueba Firestore - Solo en Development */}
+            {import.meta.env.DEV && (
+              <button
+                onClick={handleTestFirestore}
+                className={`absolute top-4 right-16 sm:right-16 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
+                  isDarkMode
+                    ? "bg-red-500/20 hover:bg-red-500/30 border-red-500/30 text-red-300"
+                    : "bg-red-500/80 hover:bg-red-500 border-red-500 text-white"
+                }`}
+                title="Probar reglas de Firestore (Dev)"
+              >
+                🧪
+              </button>
+            )}
 
             {/* Fondo con tema dinámico */}
             <div
@@ -354,7 +432,7 @@ export const VCard = () => {
                     isDarkMode ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  AJE JOBS
+                  {displayValue(userData?.Empresa, "AJE JOBS")}
                 </h2>
                 <p
                   className={`text-xs sm:text-sm md:text-base lg:text-lg tracking-widest text-center ${
@@ -384,7 +462,7 @@ export const VCard = () => {
                       isDarkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    info@ajejobs.com
+                    {displayValue(userData?.Email, "info@ajejobs.com")}
                   </span>
                 </div>
 
@@ -405,7 +483,7 @@ export const VCard = () => {
                       isDarkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    +1 (555) 123-4567
+                    {displayValue(userData?.NroCelular, "+1 (555) 123-4567")}
                   </span>
                 </div>
 
@@ -426,7 +504,7 @@ export const VCard = () => {
                       isDarkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    www.ajejobs.com
+                    {displayValue(userData?.WebSyte, "www.ajejobs.com")}
                   </span>
                 </div>
 
@@ -447,7 +525,7 @@ export const VCard = () => {
                       isDarkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    123 Business Ave, Suite 100
+                    {displayValue(userData?.Email, "Email no disponible")}
                   </span>
                 </div>
               </div>
