@@ -93,7 +93,7 @@ export const VCard = () => {
           <div className="card">
             <div className="card-face card-front">
               <div
-                className={`h-full flex flex-col items-center justify-center relative px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-2 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+                className={`h-full flex flex-col items-center justify-center relative px-1 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-1 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
                   isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
                 }`}
               >
@@ -124,8 +124,8 @@ export const VCard = () => {
     switch (activeTab) {
       case "contact":
         return (
-          <div className="text-center space-y-4 flex-1 flex flex-col justify-center info-section">
-            <div className="space-y-3">
+          <div className="text-center space-y-2 sm:space-y-4 flex-1 flex flex-col justify-center info-section">
+            <div className="space-y-2 sm:space-y-3">
               <h1
                 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light ${
                   isDarkMode ? "text-white" : "text-gray-800"
@@ -166,8 +166,8 @@ export const VCard = () => {
 
       case "company":
         return (
-          <div className="text-center space-y-4 flex-1 flex flex-col justify-center info-section">
-            <div className="space-y-4">
+          <div className="text-center space-y-2 sm:space-y-4 flex-1 flex flex-col justify-center info-section">
+            <div className="space-y-2 sm:space-y-4">
               <div className="space-y-2">
                 <p
                   className={`text-xs sm:text-sm md:text-base lg:text-lg opacity-70 ${
@@ -219,8 +219,8 @@ export const VCard = () => {
 
       case "socials":
         return (
-          <div className="text-center space-y-4 flex-1 flex flex-col justify-center info-section">
-            <div className="space-y-4">
+          <div className="text-center space-y-2 sm:space-y-4 flex-1 flex flex-col justify-center info-section">
+            <div className="space-y-2 sm:space-y-4">
               <div>
                 <p
                   className={`text-xs opacity-70 mb-4 ${
@@ -283,7 +283,7 @@ export const VCard = () => {
             {/* Botón de Modo Claro/Oscuro - Esquina Superior Izquierda */}
             <button
               onClick={toggleDarkMode}
-              className={`theme-button absolute top-4 left-4 sm:top-4 sm:left-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
+              className={`theme-button absolute top-2 left-2 sm:top-4 sm:left-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
                 isDarkMode
                   ? "bg-white/20 hover:bg-white/30 border-white/30 text-white"
                   : "bg-gray-800/80 hover:bg-gray-800 border-gray-700 text-white"
@@ -299,7 +299,7 @@ export const VCard = () => {
             {/* Botón de Giro - Esquina Superior Derecha */}
             <button
               onClick={handleFlipClick}
-              className={`flip-button absolute top-4 right-4 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
+              className={`flip-button absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
                 isDarkMode
                   ? "bg-white/20 hover:bg-white/30 border-white/30 text-white"
                   : "bg-gray-800/80 hover:bg-gray-800 border-gray-700 text-white"
@@ -312,7 +312,7 @@ export const VCard = () => {
             {import.meta.env.DEV && (
               <button
                 onClick={handleTestFirestore}
-                className={`absolute top-4 right-16 sm:right-16 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
+                className={`absolute top-2 right-12 sm:top-4 sm:right-16 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
                   isDarkMode
                     ? "bg-red-500/20 hover:bg-red-500/30 border-red-500/30 text-red-300"
                     : "bg-red-500/80 hover:bg-red-500 border-red-500 text-white"
@@ -325,14 +325,14 @@ export const VCard = () => {
 
             {/* Fondo con tema dinámico */}
             <div
-              className={`h-full flex flex-col items-center justify-between relative px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-2 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+              className={`h-full flex flex-col items-center justify-between relative px-1 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-1 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
                 isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
               }`}
             >
               {/* Ícono de Persona Superior */}
-              <div className="flex flex-col items-center mt-2 sm:mt-4 md:mt-6 lg:mt-8">
+              <div className="flex flex-col items-center mt-1 sm:mt-4 md:mt-6 lg:mt-8">
                 <div
-                  className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
+                  className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-2 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
                     isDarkMode
                       ? "bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600"
                       : "bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-500"
@@ -412,7 +412,7 @@ export const VCard = () => {
             {/* Botón de Giro - Esquina Superior Derecha (parte trasera) */}
             <button
               onClick={handleFlipClick}
-              className={`flip-button absolute top-4 right-4 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
+              className={`flip-button absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 ${
                 isDarkMode
                   ? "bg-white/20 hover:bg-white/30 border-white/30 text-white"
                   : "bg-gray-800/80 hover:bg-gray-800 border-gray-700 text-white"
@@ -421,7 +421,7 @@ export const VCard = () => {
               <FiRotateCw className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <div
-              className={`h-full flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 xl:p-12 transition-colors duration-300 ${
+              className={`h-full flex flex-col items-center justify-center p-1 sm:p-4 md:p-6 lg:p-8 xl:p-12 transition-colors duration-300 ${
                 isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
               }`}
             >
@@ -444,7 +444,7 @@ export const VCard = () => {
               </div>
 
               {/* Información de Contacto */}
-              <div className="space-y-3 sm:space-y-4 text-center w-full max-w-xs sm:max-w-sm">
+              <div className="space-y-2 sm:space-y-3 text-center w-full max-w-xs sm:max-w-sm">
                 <div className="flex items-center justify-center space-x-2 sm:space-x-3">
                   <div
                     className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -528,30 +528,6 @@ export const VCard = () => {
                     {displayValue(userData?.Email, "Email no disponible")}
                   </span>
                 </div>
-              </div>
-
-              {/* Código QR de Contacto */}
-              <div className="mt-3 sm:mt-4 md:mt-6 text-center">
-                <div
-                  className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 border p-1 mx-auto ${
-                    isDarkMode
-                      ? "bg-gray-800 border-gray-600"
-                      : "bg-white border-gray-300"
-                  }`}
-                >
-                  <div
-                    className={`w-full h-full qr-pattern opacity-90 ${
-                      isDarkMode ? "bg-white" : "bg-black"
-                    }`}
-                  ></div>
-                </div>
-                <p
-                  className={`text-xs sm:text-sm mt-1 ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Escanea para contactar
-                </p>
               </div>
             </div>
           </div>
