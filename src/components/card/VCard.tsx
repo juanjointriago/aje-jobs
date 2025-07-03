@@ -16,7 +16,7 @@ import { IoGlobeOutline } from "react-icons/io5";
 export const VCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [activeTab, setActiveTab] = useState("contact");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   const handleFlipClick = (e: React.MouseEvent) => {
     e.stopPropagation();
