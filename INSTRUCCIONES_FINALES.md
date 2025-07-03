@@ -89,7 +89,18 @@ print('✅ Django puede escribir correctamente')
 - `FIRESTORE_RULES.md` - Reglas completas y explicación
 - `DJANGO_BACKEND_SETUP.md` - Configuración completa del backend
 - `FIREBASE_SETUP.md` - Configuración inicial de Firebase
+- `FIREBASE_ANONYMOUS_USERS.md` - Comportamiento y persistencia de usuarios anónimos
 - `src/utils/testFirestoreRules.ts` - Script de pruebas para React
+
+## 👻 Información sobre usuarios anónimos
+
+**¿Cuándo se eliminan los usuarios anónimos?**
+- **Navegador**: Solo cuando el usuario borra datos/cookies manualmente
+- **Móvil**: Solo cuando se desinstala la aplicación
+- **Duración típica**: Semanas/meses en desktop, meses/años en móvil
+- **Persistencia**: Se mantienen entre sesiones, reinicios, y pérdidas de conexión
+
+Ver `FIREBASE_ANONYMOUS_USERS.md` para información detallada sobre persistencia y comportamiento.
 
 ## ⚠️ Importante
 
