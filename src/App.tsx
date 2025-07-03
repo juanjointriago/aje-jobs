@@ -182,7 +182,7 @@ function App() {
                 <div className={`tab-container flex justify-center space-x-1 rounded-lg p-1 ${
                   isDarkMode 
                     ? 'bg-white/10 border border-white/20' 
-                    : 'bg-gray-200 border border-gray-300'
+                    : 'bg-gray-300/80 border border-gray-400/50'
                 }`}>
                   <button 
                     onClick={(e) => handleTabClick(e, 'contact')}
@@ -193,7 +193,7 @@ function App() {
                           : 'bg-white text-gray-800 shadow-sm border border-gray-200'
                         : isDarkMode 
                           ? 'text-white/70 hover:text-white hover:bg-white/10' 
-                          : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                          : 'text-gray-800 hover:text-gray-900 hover:bg-white/70 font-medium'
                     }`}
                   >
                     Contact
@@ -207,7 +207,7 @@ function App() {
                           : 'bg-white text-gray-800 shadow-sm border border-gray-200'
                         : isDarkMode 
                           ? 'text-white/70 hover:text-white hover:bg-white/10' 
-                          : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                          : 'text-gray-800 hover:text-gray-900 hover:bg-white/70 font-medium'
                     }`}
                   >
                     Company
@@ -221,7 +221,7 @@ function App() {
                           : 'bg-white text-gray-800 shadow-sm border border-gray-200'
                         : isDarkMode 
                           ? 'text-white/70 hover:text-white hover:bg-white/10' 
-                          : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
+                          : 'text-gray-800 hover:text-gray-900 hover:bg-white/70 font-medium'
                     }`}
                   >
                     Socials
@@ -236,7 +236,11 @@ function App() {
             {/* Botón de Giro - Esquina Superior Derecha (parte trasera) */}
             <FiRotateCw 
               onClick={handleFlipClick}
-              className="flip-button absolute top-4 right-4 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-gray-800/80 hover:bg-gray-800 rounded-full flex items-center justify-center transition-all border border-gray-600/50 z-10"
+              className={`flip-button absolute top-4 right-4 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border z-10 cursor-pointer ${
+                isDarkMode 
+                  ? 'bg-gray-800/80 hover:bg-gray-800 border-gray-600/50 text-white' 
+                  : 'bg-gray-800/90 hover:bg-gray-800 border-gray-700 text-white'
+              }`}
             />
             <div className={`h-full flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 transition-colors duration-300 ${
               isDarkMode 
