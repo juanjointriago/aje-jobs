@@ -87,13 +87,13 @@ export const VCard = () => {
           isDarkMode
             ? "bg-gradient-to-br from-gray-900 to-black"
             : "bg-gradient-to-br from-gray-100 to-gray-200"
-        } flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 xl:p-12`}
+        } flex items-center justify-center md:p-6 lg:p-8 xl:p-12`}
       >
         <div className="card-container w-full h-full">
           <div className="card">
             <div className="card-face card-front">
               <div
-                className={`h-full flex flex-col items-center justify-center relative px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+                className={`h-full flex flex-col items-center justify-center relative px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-2 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
                   isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
                 }`}
               >
@@ -273,7 +273,7 @@ export const VCard = () => {
         isDarkMode
           ? "bg-gradient-to-br from-gray-900 to-black"
           : "bg-gradient-to-br from-gray-100 to-gray-200"
-      } flex items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 xl:p-12`}
+      } flex items-center justify-center md:p-6 lg:p-8 xl:p-12`}
     >
       {/* Contenedor de la tarjeta con perspectiva 3D */}
       <div className="card-container w-full h-full">
@@ -325,7 +325,7 @@ export const VCard = () => {
 
             {/* Fondo con tema dinámico */}
             <div
-              className={`h-full flex flex-col items-center justify-between relative px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-4 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+              className={`h-full flex flex-col items-center justify-between relative px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-2 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
                 isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
               }`}
             >
@@ -421,7 +421,7 @@ export const VCard = () => {
               <FiRotateCw className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <div
-              className={`h-full flex flex-col items-center justify-center p-3 sm:p-4 md:p-6 lg:p-8 xl:p-12 transition-colors duration-300 ${
+              className={`h-full flex flex-col items-center justify-center p-2 sm:p-4 md:p-6 lg:p-8 xl:p-12 transition-colors duration-300 ${
                 isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
               }`}
             >
