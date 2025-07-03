@@ -1,14 +1,36 @@
 @import "tailwindcss";
 
-/* Estilos para la tarjeta 3D flip - Responsivos */
+/* Estilos para la tarjeta 3D flip - Responsivos corregidos */
 .card-container {
   perspective: 1000px;
   cursor: pointer;
   position: relative;
   
-  /* Móvil (por defecto) */
-  width: 280px;
-  height: 360px;
+  /* Móvil (por defecto) - Tamaño fijo pero responsive */
+  width: 90vw;
+  max-width: 320px;
+  height: 70vh;
+  max-height: 500px;
+  min-height: 400px;
+}
+
+/* Móvil pequeño */
+@media (max-width: 479px) {
+  .card-container {
+    width: 95vw;
+    height: 75vh;
+    min-height: 380px;
+  }
+}
+
+/* Tablet pequeño */
+@media (min-width: 480px) and (max-width: 639px) {
+  .card-container {
+    width: 85vw;
+    max-width: 380px;
+    height: 70vh;
+    max-height: 520px;
+  }
 }
 
 /* Tablet */
@@ -16,6 +38,8 @@
   .card-container {
     width: 320px;
     height: 400px;
+    max-height: none;
+    min-height: auto;
   }
 }
 
@@ -80,32 +104,24 @@
 }
 
 .card-front {
-  background: white;
+  /* Sin fondo fijo - se controla desde React */
+  background: transparent;
 }
 
 .card-back {
-  background: white;
+  /* Sin fondo fijo - se controla desde React */
+  background: transparent;
   transform: rotateY(180deg);
 }
 
-/* Efectos hover adaptativos */
-.card-container:hover .card {
-  /* Solo en dispositivos no táctiles */
-  transform: scale(1.02);
-}
-
-.card-container:hover .card.flipped {
-  transform: rotateY(180deg) scale(1.02);
-}
-
-/* Desactivar hover en dispositivos táctiles */
-@media (hover: none) {
+/* Efectos hover adaptativos - solo en desktop */
+@media (min-width: 768px) and (hover: hover) {
   .card-container:hover .card {
-    transform: none;
+    transform: scale(1.02);
   }
-  
+
   .card-container:hover .card.flipped {
-    transform: rotateY(180deg);
+    transform: rotateY(180deg) scale(1.02);
   }
 }
 
@@ -206,10 +222,8 @@
 }
 
 .contact-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2);
 }
 
 .contact-button:active {
@@ -221,6 +235,24 @@
   backdrop-filter: blur(10px);
   background: rgba(31, 41, 55, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos mejorados para tabs */
+.tab-container {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+/* Mejores estilos para tabs activas */
+.tab-container button {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.tab-container button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
 .tab-active {
@@ -239,12 +271,21 @@
   color: white;
 }
 
-/* Ícono de persona mejorado */
+/* Ícono de persona mejorado - se controla desde React ahora */
 .person-icon-container {
-  background: linear-gradient(135deg, rgba(55, 65, 81, 1) 0%, rgba(31, 41, 55, 1) 100%);
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.person-icon-container:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Botón de giro en esquina superior derecha */
@@ -318,6 +359,21 @@
 }
 
 .add-contacts-float:active {
+  transform: scale(0.95);
+}
+
+/* Botón de tema claro/oscuro */
+.theme-button {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+}
+
+.theme-button:hover {
+  transform: scale(1.1);
+}
+
+.theme-button:active {
   transform: scale(0.95);
 }
 
@@ -413,27 +469,56 @@
   }
 }
 
-@media (min-width: 640px) {
+/* Responsividad específica para móvil */
+@media (max-width: 479px) {
+  /* Ajustar padding del contenido principal */
+  .card-face {
+    border-radius: 0;
+  }
+  
+  /* Ajustar espaciado interno en móvil */
+  .info-section {
+    padding: 0 1rem;
+  }
+  
+  /* Hacer que los botones flotantes sean más accesibles en móvil */
+  .flip-button,
+  .theme-button {
+    width: 44px;
+    height: 44px;
+    top: 12px;
+  }
+  
   .flip-button {
-    width: 40px !important;
-    height: 40px !important;
-    top: 16px !important;
-    right: 16px !important;
+    right: 12px;
   }
   
-  .add-contacts-float {
-    width: 40px !important;
-    height: 40px !important;
-    top: 16px !important;
-    left: 16px !important;
+  .theme-button {
+    left: 12px;
   }
   
-  .linkedin-button {
-    padding: 16px;
+  /* Ajustar tabs para móvil */
+  .tab-container {
+    margin: 0 -0.5rem;
+    padding: 0.5rem;
   }
   
-  .birthday-info {
-    padding: 10px 16px;
+  /* Mejorar legibilidad en móvil */
+  .linkedin-button,
+  .contact-button {
+    padding: 0.875rem;
+    min-height: 52px;
+  }
+}
+
+/* Modo landscape en móvil */
+@media (max-height: 600px) and (orientation: landscape) {
+  .card-container {
+    height: 95vh;
+  }
+  
+  .info-section {
+    font-size: 0.875rem;
   }
 }
 
