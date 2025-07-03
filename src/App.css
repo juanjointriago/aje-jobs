@@ -1,69 +1,90 @@
 @import "tailwindcss";
 
-/* Estilos para la tarjeta 3D flip - Responsivos corregidos */
+/* Estilos para la tarjeta 3D flip - Completamente responsivos */
 .card-container {
   perspective: 1000px;
   cursor: pointer;
   position: relative;
   
-  /* Móvil (por defecto) - Tamaño fijo pero responsive */
-  width: 90vw;
-  max-width: 320px;
-  height: 70vh;
-  max-height: 500px;
-  min-height: 400px;
+  /* Móvil - Ocupa casi toda la pantalla */
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  min-height: 100vh;
 }
 
-/* Móvil pequeño */
+/* Móvil pequeño - Ajustes finos */
 @media (max-width: 479px) {
   .card-container {
-    width: 95vw;
-    height: 75vh;
-    min-height: 380px;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
   }
 }
 
-/* Tablet pequeño */
+/* Tablet pequeño - Mantiene tamaño completo pero con más margen */
 @media (min-width: 480px) and (max-width: 639px) {
   .card-container {
-    width: 85vw;
-    max-width: 380px;
-    height: 70vh;
-    max-height: 520px;
+    width: 95%;
+    height: 95vh;
+    max-height: 95vh;
+    min-height: 95vh;
   }
 }
 
-/* Tablet */
+/* Tablet - Tamaño más controlado */
 @media (min-width: 640px) {
   .card-container {
-    width: 320px;
-    height: 400px;
-    max-height: none;
-    min-height: auto;
+    width: 80vw;
+    max-width: 600px;
+    height: 85vh;
+    max-height: 85vh;
+    min-height: 600px;
   }
 }
 
 /* Desktop pequeño */
 @media (min-width: 768px) {
   .card-container {
-    width: 350px;
-    height: 440px;
+    width: 75vw;
+    max-width: 700px;
+    height: 80vh;
+    max-height: 80vh;
+    min-height: 650px;
   }
 }
 
-/* Desktop grande */
+/* Desktop mediano */
 @media (min-width: 1024px) {
   .card-container {
-    width: 380px;
-    height: 480px;
+    width: 70vw;
+    max-width: 800px;
+    height: 85vh;
+    max-height: 85vh;
+    min-height: 700px;
   }
 }
 
 /* Desktop extra grande */
 @media (min-width: 1280px) {
   .card-container {
-    width: 400px;
-    height: 500px;
+    width: 65vw;
+    max-width: 900px;
+    height: 80vh;
+    max-height: 80vh;
+    min-height: 750px;
+  }
+}
+
+/* Desktop ultra amplio */
+@media (min-width: 1536px) {
+  .card-container {
+    width: 60vw;
+    max-width: 1000px;
+    height: 75vh;
+    max-height: 75vh;
+    min-height: 800px;
   }
 }
 
