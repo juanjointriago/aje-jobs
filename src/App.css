@@ -271,7 +271,7 @@
   transform: rotate(180deg) scale(0.95);
 }
 
-/* Estilos específicos para el botón en la cara frontal */
+/* Estilos específicos para el botón en la cara frontal - COMENTADOS para usar Tailwind
 .card-front .flip-button {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
@@ -281,8 +281,9 @@
   background: rgba(255, 255, 255, 0.3);
   border-color: rgba(255, 255, 255, 0.6);
 }
+*/
 
-/* Estilos específicos para el botón en la cara trasera */
+/* Estilos específicos para el botón en la cara trasera - COMENTADOS para usar Tailwind
 .card-back .flip-button {
   background: rgba(31, 41, 55, 0.8);
   border-color: rgba(75, 85, 99, 0.5);
@@ -292,6 +293,7 @@
   background: rgba(31, 41, 55, 1);
   border-color: rgba(75, 85, 99, 0.8);
 }
+*/
 
 /* Botón de LinkedIn mejorado */
 .linkedin-button {
@@ -399,12 +401,14 @@
 
 /* Responsive adjustments para el nuevo contenido */
 @media (max-width: 639px) {
+  /* Comentado para usar Tailwind responsivo
   .flip-button {
     width: 32px !important;
     height: 32px !important;
     top: 12px !important;
     right: 12px !important;
   }
+  */
   
   .add-contacts-float {
     width: 32px !important;
@@ -434,7 +438,7 @@
     padding: 0 1rem;
   }
   
-  /* Hacer que los botones flotantes sean más accesibles en móvil */
+  /* Hacer que los botones flotantes sean más accesibles en móvil - Comentado para usar Tailwind
   .flip-button,
   .theme-button {
     width: 44px;
@@ -449,6 +453,7 @@
   .theme-button {
     left: 12px;
   }
+  */
   
   /* Ajustar tabs para móvil */
   .tab-container {
