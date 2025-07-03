@@ -1,44 +1,483 @@
 @import "tailwindcss";
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Estilos para la tarjeta 3D flip - Responsivos */
+.card-container {
+  perspective: 1000px;
+  cursor: pointer;
+  position: relative;
+  
+  /* Móvil (por defecto) */
+  width: 280px;
+  height: 360px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+/* Tablet */
+@media (min-width: 640px) {
+  .card-container {
+    width: 320px;
+    height: 400px;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+/* Desktop pequeño */
+@media (min-width: 768px) {
+  .card-container {
+    width: 350px;
+    height: 440px;
+  }
+}
+
+/* Desktop grande */
+@media (min-width: 1024px) {
+  .card-container {
+    width: 380px;
+    height: 480px;
+  }
+}
+
+/* Desktop extra grande */
+@media (min-width: 1280px) {
+  .card-container {
+    width: 400px;
+    height: 500px;
   }
 }
 
 .card {
-  padding: 2em;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 16px;
 }
 
-.read-the-docs {
-  color: #888;
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  overflow: hidden;
+  
+  /* Sombras responsivas */
+  box-shadow: 
+    0 10px 30px -5px rgba(0, 0, 0, 0.2),
+    0 4px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Sombras más pronunciadas en pantallas grandes */
+@media (min-width: 768px) {
+  .card-face {
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-front {
+  background: white;
+}
+
+.card-back {
+  background: white;
+  transform: rotateY(180deg);
+}
+
+/* Efectos hover adaptativos */
+.card-container:hover .card {
+  /* Solo en dispositivos no táctiles */
+  transform: scale(1.02);
+}
+
+.card-container:hover .card.flipped {
+  transform: rotateY(180deg) scale(1.02);
+}
+
+/* Desactivar hover en dispositivos táctiles */
+@media (hover: none) {
+  .card-container:hover .card {
+    transform: none;
+  }
+  
+  .card-container:hover .card.flipped {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Patrón QR personalizado - responsivo */
+.qr-pattern {
+  background-image: 
+    linear-gradient(45deg, #000 25%, transparent 25%),
+    linear-gradient(-45deg, #000 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #000 75%),
+    linear-gradient(-45deg, transparent 75%, #000 75%);
+  
+  /* Tamaño del patrón adaptativo */
+  background-size: 3px 3px;
+  background-position: 0 0, 0 1.5px, 1.5px -1.5px, -1.5px 0px;
+}
+
+@media (min-width: 640px) {
+  .qr-pattern {
+    background-size: 4px 4px;
+    background-position: 0 0, 0 2px, 2px -2px, -2px 0px;
+  }
+}
+
+/* Animación sutil para elementos internos */
+.card-face > * {
+  transition: opacity 0.3s ease;
+}
+
+/* Indicador visual responsivo */
+.card-container::after {
+  content: "👆 Toca para voltear";
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #666;
+  opacity: 0.7;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .card-container::after {
+    content: "👆 Clic para voltear";
+    bottom: -30px;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-container::after {
+    bottom: -35px;
+    font-size: 13px;
+  }
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) {
+  .card-container {
+    /* Feedback táctil más visible */
+    transition: transform 0.1s ease;
+  }
+  
+  .card-container:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Optimizaciones de rendimiento */
+.card,
+.card-face {
+  will-change: transform;
+}
+
+/* Asegurar que el contenido no se desborde */
+.card-face * {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+/* Espaciado mejorado para móviles */
+@media (max-width: 639px) {
+  .card-container {
+    margin: 0 auto;
+  }
+  
+  /* Reducir padding en móviles si es necesario */
+  .card-face {
+    font-size: 0.9em;
+  }
+}
+
+/* Estilos para botones y pestañas */
+.contact-button {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.contact-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.contact-button:active {
+  transform: translateY(0);
+}
+
+/* Pestañas inferiores */
+.tab-container {
+  backdrop-filter: blur(10px);
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-active {
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-inactive {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.tab-inactive:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Ícono de persona mejorado */
+.person-icon-container {
+  background: linear-gradient(135deg, rgba(55, 65, 81, 1) 0%, rgba(31, 41, 55, 1) 100%);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Botón de giro en esquina superior derecha */
+.flip-button {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.flip-button:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+.flip-button:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+/* Estilos específicos para el botón en la cara frontal */
+.card-front .flip-button {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.card-front .flip-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Estilos específicos para el botón en la cara trasera */
+.card-back .flip-button {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(75, 85, 99, 0.5);
+}
+
+.card-back .flip-button:hover {
+  background: rgba(31, 41, 55, 1);
+  border-color: rgba(75, 85, 99, 0.8);
+}
+
+/* Botón de LinkedIn mejorado */
+.linkedin-button {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.linkedin-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.linkedin-button:active {
+  transform: translateY(0);
+}
+
+/* Botón add to contacts flotante */
+.add-contacts-float {
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.add-contacts-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+}
+
+.add-contacts-float:active {
+  transform: scale(0.95);
+}
+
+/* Transiciones suaves para el cambio de contenido */
+.tab-content-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.tab-content-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tab-content-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+/* Mejoras para información de contacto y empresa */
+.info-section {
+  transition: all 0.3s ease;
+}
+
+.info-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.info-value {
+  color: white;
+  font-weight: 300;
+}
+
+/* Cumpleaños styling */
+.birthday-info {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  backdrop-filter: blur(10px);
+}
+
+/* Animación para pestañas activas */
+.tab-active {
+  background: white !important;
+  color: #1f2937 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.tab-inactive {
+  transition: all 0.2s ease;
+}
+
+.tab-inactive:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments para el nuevo contenido */
+@media (max-width: 639px) {
+  .flip-button {
+    width: 32px !important;
+    height: 32px !important;
+    top: 12px !important;
+    right: 12px !important;
+  }
+  
+  .add-contacts-float {
+    width: 32px !important;
+    height: 32px !important;
+    top: 12px !important;
+    left: 12px !important;
+  }
+  
+  .linkedin-button {
+    padding: 12px;
+  }
+  
+  .birthday-info {
+    padding: 6px 10px;
+  }
+}
+
+@media (min-width: 640px) {
+  .flip-button {
+    width: 40px !important;
+    height: 40px !important;
+    top: 16px !important;
+    right: 16px !important;
+  }
+  
+  .add-contacts-float {
+    width: 40px !important;
+    height: 40px !important;
+    top: 16px !important;
+    left: 16px !important;
+  }
+  
+  .linkedin-button {
+    padding: 16px;
+  }
+  
+  .birthday-info {
+    padding: 10px 16px;
+  }
+}
+
+/* Layout fijo para el contenido de las pestañas */
+.content-area {
+  min-height: 200px;
+  max-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .content-area {
+    min-height: 240px;
+    max-height: 280px;
+  }
+}
+
+/* Asegurar que el contenido no se mueva */
+.info-section {
+  transition: opacity 0.3s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mejora para el ícono de cumpleaños */
+.birthday-info .text-yellow-300 {
+  filter: drop-shadow(0 0 4px rgba(255, 193, 7, 0.3));
+}
+
+/* Botón add to contacts con ancho completo */
+.contact-button {
+  padding: 12px 24px;
+  min-width: 200px;
+}
+
+@media (max-width: 639px) {
+  .contact-button {
+    padding: 10px 20px;
+    min-width: 180px;
+  }
 }
