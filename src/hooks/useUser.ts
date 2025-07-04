@@ -1,22 +1,9 @@
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { db, signInAnonymouslyIfNeeded } from "../lib/firebase";
+import type { UserData } from "../interfaces/user.interface";
 
-export interface UserData {
-  Nombres: string;
-  Apellidos: string;
-  Cargo: string;
-  CreatedAt: string;
-  Email: string;
-  Empresa: string;
-  FechaNac: string;
-  IsActive: string;
-  LinkedInUrl: string;
-  NroCelular: string;
-  PhotoUrl: string;
-  TipoSangre: string;
-  WebSyte: string;
-}
+
 
 export const useUser = (uid: string | undefined) => {
   const [userData, setUserData] = useState<UserData | null>(null);

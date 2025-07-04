@@ -16,6 +16,111 @@ import { IoGlobeOutline } from "react-icons/io5";
 import { useUser } from "../../hooks/useUser";
 import { NotFound } from "../NotFound";
 import { testFirestoreRules } from "../../utils/testFirestoreRules";
+import type { UserData } from "../../interfaces/user.interface";
+
+// Componente para el avatar con mejor manejo de errores
+const AvatarImage = ({ 
+  userData, 
+  isDarkMode, 
+  displayValue 
+}: { 
+  userData: UserData | null; 
+  isDarkMode: boolean; 
+  displayValue: (value: string | undefined, fallback?: string) => string;
+}) => {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  // Función mejorada para validar URLs de imagen
+  const isValidImageUrl = (url: string | undefined): boolean => {
+    if (!url || url.trim() === "" || url === "-------") {
+      return false;
+    }
+    
+    // Decodificar la URL para manejar caracteres especiales
+    try {
+      const decodedUrl = decodeURIComponent(url);
+      new URL(decodedUrl);
+      return true;
+    } catch {
+      // Si la decodificación falla, intentar con la URL original
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  };
+
+  // Reset error state when userData changes
+  useEffect(() => {
+    setImageError(false);
+    setImageLoading(true);
+  }, [userData?.PhotoUrl]);
+
+  const photoUrl = userData?.PhotoUrl;
+
+  // Si no hay URL válida, mostrar ícono directamente
+  if (!isValidImageUrl(photoUrl)) {
+    return (
+      <FiUser
+        className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 ${
+          isDarkMode ? "text-white" : "text-white"
+        }`}
+      />
+    );
+  }
+
+  // Si hubo error de carga, mostrar ícono
+  if (imageError) {
+    return (
+      <FiUser
+        className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 ${
+          isDarkMode ? "text-white" : "text-white"
+        }`}
+      />
+    );
+  }
+
+  return (
+    <>
+      {imageLoading && (
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="animate-spin">
+            <FiUser
+              className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 opacity-50 ${
+                isDarkMode ? "text-white" : "text-white"
+              }`}
+            />
+          </div>
+        </div>
+      )}
+      <img
+        src={photoUrl}
+        alt={`${displayValue(userData?.Nombres)} ${displayValue(userData?.Apellidos)}`}
+        className={`w-full h-full object-cover rounded-2xl transition-opacity duration-300 ${
+          imageLoading ? "opacity-0 absolute" : "opacity-100"
+        }`}
+        onLoad={() => {
+          console.log('✅ Imagen cargada exitosamente:', photoUrl);
+          setImageLoading(false);
+          setImageError(false);
+        }}
+        onError={() => {
+          console.log('❌ Error cargando imagen:', photoUrl);
+          setImageError(true);
+          setImageLoading(false);
+        }}
+        style={{ 
+          imageRendering: 'auto',
+          objectFit: 'cover',
+          backgroundColor: 'transparent'
+        }}
+      />
+    </>
+  );
+};
 
 export const VCard = () => {
   const { uid } = useParams<{ uid: string }>();
@@ -205,6 +310,66 @@ END:VCARD`;
     return value || fallback;
   };
 
+  // Función para formatear fecha desde Unix timestamp
+  const formatDateFromUnix = (unixTimestamp: string | undefined) => {
+    if (!unixTimestamp || unixTimestamp === "-------") {
+      return "2019"; // Fallback por defecto
+    }
+    
+    try {
+      // Convertir string a número y luego a fecha
+      const timestamp = parseInt(unixTimestamp);
+      if (isNaN(timestamp)) {
+        return unixTimestamp; // Si no es número, devolver como está
+      }
+      
+      // Crear fecha desde timestamp (multiplicar por 1000 si está en segundos)
+      const date = new Date(timestamp > 9999999999 ? timestamp : timestamp * 1000);
+      
+      // Formatear fecha como "Enero 2020" o "15 de Marzo de 2020"
+      return date.toLocaleDateString('es-ES', { 
+        year: 'numeric',
+        month: 'long'
+      });
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return unixTimestamp; // Devolver valor original si hay error
+    }
+  };
+
+  // Función para verificar si una URL es válida (general)
+  const isValidUrl = (url: string | undefined): boolean => {
+    if (!url || url.trim() === "" || url === "-------") {
+      return false;
+    }
+    
+    // Verificar que sea una URL válida
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Debug cuando cambie userData
+  useEffect(() => {
+    if (userData?.PhotoUrl && import.meta.env.DEV) {
+      console.log('🖼️ Debug de imagen:');
+      console.log('URL original:', userData.PhotoUrl);
+      console.log('URL válida?', isValidUrl(userData.PhotoUrl));
+      
+      try {
+        const urlObj = new URL(userData.PhotoUrl);
+        console.log('Host:', urlObj.host);
+        console.log('Pathname:', urlObj.pathname);
+        console.log('Search params:', urlObj.search);
+      } catch (e) {
+        console.log('Error parseando URL:', e);
+      }
+    }
+  }, [userData?.PhotoUrl]);
+
   useEffect(() => {
     // Cargar el estado del modo oscuro desde localStorage al inicializar
     const savedDarkMode = localStorage.getItem("isDarkMode");
@@ -349,7 +514,7 @@ END:VCARD`;
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
-                  Miembro desde {displayValue(userData?.CreatedAt, "2019")}
+                  Miembro desde {formatDateFromUnix(userData?.CreatedAt)}
                 </p>
               </div>
             </div>
@@ -369,21 +534,35 @@ END:VCARD`;
                   Redes Sociales
                 </p>
               </div>
-              <button
-                onClick={handleLinkedInClick}
-                className={`linkedin-button flex items-center justify-center space-x-3 w-full rounded-lg transition-all border py-3 ${
-                  isDarkMode
-                    ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
-                    : "bg-gray-800/10 border-gray-800/20 hover:bg-gray-800/20 text-gray-800"
-                }`}
-              >
-                <FiLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
-                <div className="text-left flex-1">
-                  <p className="text-sm sm:text-base font-medium">LinkedIn</p>
-                  <p className="text-xs opacity-70">{displayValue(userData?.LinkedInUrl, "@pedro-director")}</p>
+              
+              {/* Solo mostrar LinkedIn si hay URL válida */}
+              {isValidUrl(userData?.LinkedInUrl) && (
+                <button
+                  onClick={handleLinkedInClick}
+                  className={`linkedin-button flex items-center justify-center space-x-3 w-full rounded-lg transition-all border py-3 ${
+                    isDarkMode
+                      ? "bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                      : "bg-gray-800/10 border-gray-800/20 hover:bg-gray-800/20 text-gray-800"
+                  }`}
+                >
+                  <FiLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <div className="text-left flex-1">
+                    <p className="text-sm sm:text-base font-medium">LinkedIn</p>
+                    <p className="text-xs opacity-70">{userData?.LinkedInUrl}</p>
+                  </div>
+                  <FiExternalLink className="w-4 h-4 opacity-60" />
+                </button>
+              )}
+              
+              {/* Mensaje cuando no hay LinkedIn */}
+              {!isValidUrl(userData?.LinkedInUrl) && (
+                <div className={`text-center py-4 ${
+                  isDarkMode ? "text-gray-400" : "text-gray-500"
+                }`}>
+                  <FiLinkedin className="w-8 h-8 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm opacity-70">LinkedIn no disponible</p>
                 </div>
-                <FiExternalLink className="w-4 h-4 opacity-60" />
-              </button>
+              )}
 
               {/* Botón Add to contacts en la sección Socials */}
               <button
@@ -483,20 +662,16 @@ END:VCARD`;
                 isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
               }`}
             >
-              {/* Ícono de Persona Superior */}
+              {/* Avatar o Ícono de Persona Superior */}
               <div className="flex flex-col items-center mt-1 sm:mt-4 md:mt-6 lg:mt-8">
                 <div
                   className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-2 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
                     isDarkMode
                       ? "bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600"
                       : "bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-500"
-                  }`}
+                  } overflow-hidden`}
                 >
-                  <FiUser
-                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 ${
-                      isDarkMode ? "text-white" : "text-white"
-                    }`}
-                  />
+                  <AvatarImage userData={userData} isDarkMode={isDarkMode} displayValue={displayValue} />
                 </div>
               </div>
 
