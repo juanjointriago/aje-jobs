@@ -159,104 +159,33 @@ export const VCard = () => {
     const contactEmail = userData?.Email || "";
 
     try {
-      // Método 1: Intentar usar la API nativa de contactos (Chrome Android principalmente)
-      if ('contacts' in navigator && 'ContactsManager' in window) {
-        try {
-          await ((navigator as unknown as { contacts: { select: (properties: string[], options: { multiple: boolean }) => Promise<void> } }).contacts.select(['name', 'tel', 'email'], { multiple: false }));
-          alert(`✅ Se ha iniciado el proceso para agregar "${contactName}" a tus contactos.`);
-          return;
-        } catch (contactApiError) {
-          console.log('API de contactos no disponible o falló:', contactApiError);
-        }
-      }
-
-      // Método 2: Usar esquemas de URL para abrir la app de contactos directamente
+      // Método principal: Crear y descargar vCard (funciona en todos los dispositivos)
+      const vCard = createVCard({
+        name: contactName,
+        organization: contactOrg,
+        tel: phoneNumber,
+        email: contactEmail,
+        url: userData?.LinkedInUrl || userData?.WebSyte || ""
+      });
+      
+      downloadVCard(vCard, contactName);
+      
+      // Mensaje de éxito con instrucciones
       const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const isAndroid = /Android/i.test(navigator.userAgent);
-
+      
       if (isMobile) {
-        if (isIOS) {
-          // Para iOS: usar esquema de URL para abrir Contactos
-          const contactURL = `https://contacts.apple.com/add?firstName=${encodeURIComponent(userData?.Nombres || '')}&lastName=${encodeURIComponent(userData?.Apellidos || '')}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(contactEmail)}&organization=${encodeURIComponent(contactOrg)}`;
-          
-          // Intentar abrir directamente
-          window.open(contactURL, '_blank');
-          
-          // Mensaje alternativo para iOS
-          setTimeout(() => {
-            if (confirm("📱 ¿Se abrió la app de Contactos? Si no, ¿quieres que descargue el archivo de contacto?")) {
-              // Si el usuario dice que no se abrió, usar fallback
-              const vCard = createVCard({
-                name: contactName,
-                organization: contactOrg,
-                tel: phoneNumber,
-                email: contactEmail,
-                url: userData?.LinkedInUrl || userData?.WebSyte || ""
-              });
-              downloadVCard(vCard, contactName);
-            }
-          }, 2000);
-          
-        } else if (isAndroid) {
-          // Para Android: usar Intent implícito
-          const intentURL = `intent://contacts/people/#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir%2Fperson;S.name=${encodeURIComponent(contactName)};S.phone=${encodeURIComponent(phoneNumber)};S.email=${encodeURIComponent(contactEmail)};S.company=${encodeURIComponent(contactOrg)};end`;
-          
-          try {
-            window.location.href = intentURL;
-            alert("📱 Abriendo la app de Contactos para agregar el contacto...");
-          } catch {
-            // Fallback para Android
-            const telURL = `tel:${phoneNumber}`;
-            window.open(telURL, '_blank');
-            alert(`📞 Se ha abierto el marcador con el número de ${contactName}. Puedes guardarlo desde ahí.`);
-          }
-        } else {
-          // Otros móviles: abrir marcador
-          const telURL = `tel:${phoneNumber}`;
-          window.open(telURL, '_blank');
-          alert(`📞 Se ha abierto el marcador con el número de ${contactName}.`);
-        }
+        alert(`📱 ¡Perfecto! Se ha descargado el contacto "${contactName}.vcf".\n\n📋 Para agregarlo:\n• Busca el archivo en tu carpeta de Descargas\n• Tócalo para abrirlo\n• Confirma para agregar a tus contactos`);
       } else {
-        // Método 3: Para desktop, intentar Web Share API o fallback a vCard
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: `Contacto: ${contactName}`,
-              text: `${contactName}\n${contactOrg}\nTeléfono: ${phoneNumber}\nEmail: ${contactEmail}`,
-              url: window.location.href
-            });
-            alert("✅ Información de contacto compartida exitosamente.");
-          } catch {
-            // Fallback a vCard
-            createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
-          }
-        } else {
-          // Fallback a vCard
-          createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
-        }
+        alert(`💻 ¡Listo! Se ha descargado el archivo "${contactName}.vcf".\n\n📋 Para agregarlo:\n• Abre el archivo descargado\n• Se abrirá tu aplicación de contactos\n• Confirma para agregar el contacto`);
       }
+      
     } catch (error) {
-      console.error('Error al agregar contacto:', error);
-      // Último fallback: vCard
-      createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
+      console.error('Error al crear vCard:', error);
+      alert("❌ Hubo un error al crear el archivo de contacto. Por favor, intenta nuevamente.");
     }
   };
 
-  // Función auxiliar para crear y descargar vCard
-  const createAndDownloadVCard = (contactName: string, contactOrg: string, phoneNumber: string, contactEmail: string) => {
-    const vCard = createVCard({
-      name: contactName,
-      organization: contactOrg,
-      tel: phoneNumber,
-      email: contactEmail,
-      url: userData?.LinkedInUrl || userData?.WebSyte || ""
-    });
-    downloadVCard(vCard, contactName);
-    alert(`💻 Se ha descargado el archivo de contacto "${contactName}.vcf". Ábrelo para agregarlo a tus contactos.`);
-  };
-
-  // Función para crear vCard
+  // Función para crear vCard mejorada
   const createVCard = (contact: {
     name: string;
     organization: string;
@@ -264,13 +193,21 @@ export const VCard = () => {
     email: string;
     url: string;
   }) => {
+    // Separar nombre y apellido si es posible
+    const nameParts = contact.name.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    
     const vCard = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.name}
+N:${lastName};${firstName};;;
 ORG:${contact.organization}
-TEL:${contact.tel}
-EMAIL:${contact.email}
+TITLE:${displayValue(userData?.Cargo, "")}
+TEL;TYPE=CELL:${contact.tel}
+EMAIL;TYPE=WORK:${contact.email}
 URL:${contact.url}
+NOTE:Contacto agregado desde tarjeta digital AJE JOBS
 END:VCARD`;
     return vCard;
   };
