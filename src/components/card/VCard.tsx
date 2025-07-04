@@ -17,6 +17,9 @@ import { useUser } from "../../hooks/useUser";
 import { NotFound } from "../NotFound";
 import { testFirestoreRules } from "../../utils/testFirestoreRules";
 import type { UserData } from "../../interfaces/user.interface";
+import { UnityLogo } from "../logo/UnityLogo";
+
+
 
 // Componente para el avatar con mejor manejo de errores
 const AvatarImage = ({ 
@@ -65,7 +68,7 @@ const AvatarImage = ({
   if (!isValidImageUrl(photoUrl)) {
     return (
       <FiUser
-        className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 ${
+        className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 ${
           isDarkMode ? "text-white" : "text-white"
         }`}
       />
@@ -76,7 +79,7 @@ const AvatarImage = ({
   if (imageError) {
     return (
       <FiUser
-        className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 ${
+        className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 ${
           isDarkMode ? "text-white" : "text-white"
         }`}
       />
@@ -89,7 +92,7 @@ const AvatarImage = ({
         <div className="w-full h-full flex items-center justify-center">
           <div className="animate-spin">
             <FiUser
-              className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 xl:w-12 xl:h-12 opacity-50 ${
+              className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 opacity-50 ${
                 isDarkMode ? "text-white" : "text-white"
               }`}
             />
@@ -99,7 +102,7 @@ const AvatarImage = ({
       <img
         src={photoUrl}
         alt={`${displayValue(userData?.Nombres)} ${displayValue(userData?.Apellidos)}`}
-        className={`w-full h-full object-cover rounded-2xl transition-opacity duration-300 ${
+        className={`w-full h-full object-cover rounded-full transition-opacity duration-300 ${
           imageLoading ? "opacity-0 absolute" : "opacity-100"
         }`}
         onLoad={() => {
@@ -132,6 +135,11 @@ export const VCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [activeTab, setActiveTab] = useState("contact");
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Debug: Monitorear cambios en isDarkMode
+  useEffect(() => {
+    console.log('🔄 isDarkMode cambió a:', isDarkMode, 'Logo a usar:', isDarkMode ? 'black_logo.svg' : 'white_logo.svg');
+  }, [isDarkMode]);
 
   const handleFlipClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -310,13 +318,17 @@ END:VCARD`;
   useEffect(() => {
     // Cargar el estado del modo oscuro desde localStorage al inicializar
     const savedDarkMode = localStorage.getItem("isDarkMode");
+    console.log('📱 Cargando modo desde localStorage:', savedDarkMode);
     if (savedDarkMode !== null) {
-      setIsDarkMode(JSON.parse(savedDarkMode));
+      const parsedMode = JSON.parse(savedDarkMode);
+      console.log('📱 Aplicando modo desde localStorage:', parsedMode);
+      setIsDarkMode(parsedMode);
     }
   }, []);
 
   useEffect(() => {
     // Guardar el estado del modo oscuro en localStorage
+    console.log('💾 Guardando modo en localStorage:', isDarkMode);
     localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
@@ -368,7 +380,7 @@ END:VCARD`;
           <div className="text-center space-y-2 sm:space-y-4 flex-1 flex flex-col justify-center info-section">
             <div className="space-y-2 sm:space-y-3">
               <h1
-                className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light ${
+                className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight ${
                   isDarkMode ? "text-white" : "text-gray-800"
                 }`}
               >
@@ -376,24 +388,24 @@ END:VCARD`;
                 {displayValue(userData?.Apellidos)}
               </h1>
               <p
-                className={`text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-light opacity-80 ${
+                className={`text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium opacity-90 ${
                   isDarkMode ? "text-white" : "text-gray-600"
                 }`}
               >
                 {displayValue(userData?.Cargo, "Cargo no disponible")}
               </p>
               <div className="birthday-info inline-flex items-center space-x-3 mt-4">
-                <HiOutlineCake className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-yellow-400" />
+                <HiOutlineCake className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-yellow-400" />
                 <div className="text-left">
                   <p
-                    className={`text-xs sm:text-sm md:text-base lg:text-lg opacity-70 ${
+                    className={`text-sm sm:text-base md:text-lg lg:text-xl opacity-70 ${
                       isDarkMode ? "text-gray-300" : "text-gray-500"
                     }`}
                   >
                     Cumpleaños
                   </p>
                   <p
-                    className={`text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl ${
+                    className={`text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl ${
                       isDarkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -411,14 +423,14 @@ END:VCARD`;
             <div className="space-y-2 sm:space-y-4">
               <div className="space-y-2">
                 <p
-                  className={`text-xs sm:text-sm md:text-base lg:text-lg opacity-70 ${
+                  className={`text-sm sm:text-base md:text-lg lg:text-xl opacity-70 ${
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
                   Empresa
                 </p>
                 <h2
-                  className={`text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium ${
+                  className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium ${
                     isDarkMode ? "text-white" : "text-gray-800"
                   }`}
                 >
@@ -427,14 +439,14 @@ END:VCARD`;
               </div>
               <div className="space-y-2">
                 <p
-                  className={`text-xs sm:text-sm md:text-base lg:text-lg opacity-70 ${
+                  className={`text-sm sm:text-base md:text-lg lg:text-xl opacity-70 ${
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
                   Cargo
                 </p>
                 <p
-                  className={`text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-light ${
+                  className={`text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light ${
                     isDarkMode ? "text-white" : "text-gray-800"
                   }`}
                 >
@@ -447,7 +459,7 @@ END:VCARD`;
                 }`}
               >
                 <p
-                  className={`text-xs opacity-60 ${
+                  className={`text-sm sm:text-base md:text-lg opacity-60 ${
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
@@ -464,7 +476,7 @@ END:VCARD`;
             <div className="space-y-2 sm:space-y-4">
               <div>
                 <p
-                  className={`text-xs opacity-70 mb-4 ${
+                  className={`text-sm sm:text-base opacity-70 mb-4 ${
                     isDarkMode ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
@@ -482,12 +494,12 @@ END:VCARD`;
                       : "bg-gray-800/10 border-gray-800/20 hover:bg-gray-800/20 text-gray-800"
                   }`}
                 >
-                  <FiLinkedin className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <FiLinkedin className="w-8 h-8 sm:w-10 sm:h-10" />
                   <div className="text-left flex-1">
-                    <p className="text-sm sm:text-base font-medium">LinkedIn</p>
-                    <p className="text-xs opacity-70">{userData?.LinkedInUrl}</p>
+                    <p className="text-base sm:text-lg font-medium">LinkedIn</p>
+                    <p className="text-sm sm:text-base opacity-70">{userData?.LinkedInUrl}</p>
                   </div>
-                  <FiExternalLink className="w-4 h-4 opacity-60" />
+                  <FiExternalLink className="w-5 h-5 opacity-60" />
                 </button>
               )}
               
@@ -496,8 +508,8 @@ END:VCARD`;
                 <div className={`text-center py-4 ${
                   isDarkMode ? "text-gray-400" : "text-gray-500"
                 }`}>
-                  <FiLinkedin className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm opacity-70">LinkedIn no disponible</p>
+                  <FiLinkedin className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 opacity-40" />
+                  <p className="text-base sm:text-lg opacity-70">LinkedIn no disponible</p>
                 </div>
               )}
 
@@ -510,13 +522,13 @@ END:VCARD`;
                     : "bg-gray-500/20 hover:bg-gray-500/30 border-gray-400/30"
                 }`}
               >
-                <FiPlusCircle className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                <FiPlusCircle className={`w-6 h-6 sm:w-8 sm:h-8 ${
                   userData?.NroCelular && userData.NroCelular !== "-------"
                     ? "text-green-400"
                     : "text-gray-400"
                 }`} />
                 <div className="text-center">
-                  <p className={`text-sm sm:text-base font-medium ${
+                  <p className={`text-base sm:text-lg font-medium ${
                     userData?.NroCelular && userData.NroCelular !== "-------"
                       ? "text-green-400"
                       : "text-gray-400"
@@ -599,14 +611,20 @@ END:VCARD`;
                 isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
               }`}
             >
-              {/* Avatar o Ícono de Persona Superior */}
-              <div className="flex flex-col items-center mt-2 sm:mt-4 md:mt-6 lg:mt-8">
+              {/* Logo Unity arriba */}
+              <div className="flex items-center justify-center mt-3 sm:mt-4 md:mt-5 lg:mt-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
+                <UnityLogo isDarkMode={isDarkMode} />
+                
+              </div>
+
+              {/* Avatar más grande y redondo debajo */}
+              <div className="flex flex-col items-center mt-50 md:mt-0 xl:mt-0 mb-1 sm:mb-4 md:mb-5 lg:mb-6">
                 <div
-                  className={`w-12 h-12 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-3 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
+                  className={`w-62 h-62 sm:w-32 sm:h-52 md:w-52 md:h-52 lg:w-70 lg:h-70 xl:w-80 xl:h-80 person-icon-container rounded-full flex items-center justify-center ${
                     isDarkMode
-                      ? "bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600"
-                      : "bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-500"
-                  } overflow-hidden`}
+                      ? "bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600"
+                      : "bg-gradient-to-br from-gray-600 to-gray-700 border-2 border-gray-500"
+                  } overflow-hidden shadow-lg`}
                 >
                   <AvatarImage userData={userData} isDarkMode={isDarkMode} displayValue={displayValue} />
                 </div>
@@ -628,7 +646,7 @@ END:VCARD`;
                 >
                   <button
                     onClick={(e) => handleTabClick(e, "contact")}
-                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
+                    className={`flex-1 rounded-md font-medium py-3 px-3 sm:px-4 transition-all text-sm sm:text-base ${
                       activeTab === "contact"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
@@ -642,7 +660,7 @@ END:VCARD`;
                   </button>
                   <button
                     onClick={(e) => handleTabClick(e, "company")}
-                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
+                    className={`flex-1 rounded-md font-medium py-3 px-3 sm:px-4 transition-all text-sm sm:text-base ${
                       activeTab === "company"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
@@ -656,7 +674,7 @@ END:VCARD`;
                   </button>
                   <button
                     onClick={(e) => handleTabClick(e, "socials")}
-                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
+                    className={`flex-1 rounded-md font-medium py-3 px-3 sm:px-4 transition-all text-sm sm:text-base ${
                       activeTab === "socials"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
