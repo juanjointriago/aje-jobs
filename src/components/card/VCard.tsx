@@ -620,7 +620,7 @@ END:VCARD`;
               {/* Avatar más grande y redondo debajo */}
               <div className="flex flex-col items-center mb-6 sm:mb-8 md:mb-4 lg:mb-6 mt-20 md:mt-0 xl:mt-0">
                 <div
-                  className={`w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 xl:w-80 xl:h-80 person-icon-container rounded-full flex items-center justify-center ${
+                  className={`w-48 h-48 sm:w-56 sm:h-56 md:w-50 md:h-50 lg:w-60 lg:h-60 xl:w-65 xl:h-65 person-icon-container rounded-full flex items-center justify-center ${
                     isDarkMode
                       ? "bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600"
                       : "bg-gradient-to-br from-gray-600 to-gray-700 border-2 border-gray-500"
