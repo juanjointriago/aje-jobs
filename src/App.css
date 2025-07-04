@@ -689,36 +689,12 @@
     padding-bottom: max(env(safe-area-inset-bottom), 60px);
   }
   
-  /* Posición fija para las tabs en móvil si es necesario */
-  .tab-container {
-    position: relative;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Tema oscuro para tabs en móvil */
-  [data-theme="dark"] .tab-container {
-    background: rgba(0, 0, 0, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Mejorar contraste de las tabs en móvil */
+  /* Mejorar contraste de las tabs en móvil pero mantener colores originales */
   .tab-container button {
     font-weight: 600;
     letter-spacing: 0.025em;
     border-radius: 0.5rem;
     transition: all 0.2s ease;
-  }
-  
-  /* Estados activos más visibles en móvil */
-  .tab-container button[class*="bg-white"] {
-    background: white !important;
-    color: #1f2937 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 }
 
