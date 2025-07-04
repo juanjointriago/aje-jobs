@@ -791,7 +791,7 @@ END:VCARD`;
                       isDarkMode ? "text-gray-300" : "text-gray-700"
                     }`}
                   >
-                    {displayValue(userData?.Email, "Email no disponible")}
+                    {displayValue(userData?.City, "Ciudad no disponible")}
                   </span>
                 </div>
               </div>

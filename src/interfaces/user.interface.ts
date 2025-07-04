@@ -10,6 +10,7 @@ export interface UserData {
   LinkedInUrl: string;
   NroCelular: string;
   PhotoUrl: string;
+  City?: string;
   TipoSangre: string;
   WebSyte: string;
 }
