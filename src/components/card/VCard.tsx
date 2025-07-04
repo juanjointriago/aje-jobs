@@ -618,7 +618,7 @@ END:VCARD`;
               </div>
 
               {/* Avatar más grande y redondo debajo */}
-              <div className="flex flex-col items-center mt-50 md:mt-0 xl:mt-0 mb-1 sm:mb-4 md:mb-5 lg:mb-6">
+              <div className="flex flex-col items-center mt-20 md:mt-0 xl:mt-0 mb-1 sm:mb-4 md:mb-5 lg:mb-6">
                 <div
                   className={`w-62 h-62 sm:w-32 sm:h-52 md:w-52 md:h-52 lg:w-70 lg:h-70 xl:w-80 xl:h-80 person-icon-container rounded-full flex items-center justify-center ${
                     isDarkMode
