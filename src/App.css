@@ -28,7 +28,7 @@
   
   /* Asegurar que el contenido no toque los bordes */
   .card-face {
-    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 30px);
   }
 }
 
@@ -44,7 +44,7 @@
   
   /* Asegurar que el contenido no toque los bordes */
   .card-face {
-    padding-bottom: max(env(safe-area-inset-bottom), 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 30px);
   }
 }
 
@@ -607,7 +607,7 @@
     
     /* Asegurar que las tabs sean visibles */
     .tab-container {
-      margin-bottom: max(env(safe-area-inset-bottom), 8px);
+      margin-bottom: max(env(safe-area-inset-bottom), 12px);
       min-height: 44px; /* Altura mínima recomendada para toque en iOS */
     }
   }
@@ -686,7 +686,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
-    padding-bottom: max(env(safe-area-inset-bottom), 60px);
+    padding-bottom: max(env(safe-area-inset-bottom), 80px);
   }
   
   /* Mejorar contraste de las tabs en móvil pero mantener colores originales */
