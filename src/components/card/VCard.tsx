@@ -68,7 +68,7 @@ const AvatarImage = ({
   if (!isValidImageUrl(photoUrl)) {
     return (
       <FiUser
-        className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 ${
+        className={`w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 ${
           isDarkMode ? "text-white" : "text-white"
         }`}
       />
@@ -79,7 +79,7 @@ const AvatarImage = ({
   if (imageError) {
     return (
       <FiUser
-        className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 ${
+        className={`w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 ${
           isDarkMode ? "text-white" : "text-white"
         }`}
       />
@@ -92,7 +92,7 @@ const AvatarImage = ({
         <div className="w-full h-full flex items-center justify-center">
           <div className="animate-spin">
             <FiUser
-              className={`w-16 h-16 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 opacity-50 ${
+              className={`w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 xl:w-36 xl:h-36 opacity-50 ${
                 isDarkMode ? "text-white" : "text-white"
               }`}
             />
@@ -612,15 +612,15 @@ END:VCARD`;
               }`}
             >
               {/* Logo Unity arriba */}
-              <div className="flex items-center justify-center mt-3 sm:mt-4 md:mt-5 lg:mt-6 mb-4 sm:mb-5 md:mb-6 lg:mb-7">
+              <div className="flex items-center justify-center mt-2 sm:mt-3 md:mt-4 lg:mt-5 mb-2 sm:mb-3 md:mb-4 lg:mb-5">
                 <UnityLogo isDarkMode={isDarkMode} />
                 
               </div>
 
               {/* Avatar más grande y redondo debajo */}
-              <div className="flex flex-col items-center mt-20 md:mt-0 xl:mt-0 mb-1 sm:mb-4 md:mb-5 lg:mb-6">
+              <div className="flex flex-col items-center mb-6 sm:mb-8 md:mb-4 lg:mb-6 mt-20 md:mt-0 xl:mt-0">
                 <div
-                  className={`w-62 h-62 sm:w-32 sm:h-52 md:w-52 md:h-52 lg:w-70 lg:h-70 xl:w-80 xl:h-80 person-icon-container rounded-full flex items-center justify-center ${
+                  className={`w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 xl:w-80 xl:h-80 person-icon-container rounded-full flex items-center justify-center ${
                     isDarkMode
                       ? "bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600"
                       : "bg-gradient-to-br from-gray-600 to-gray-700 border-2 border-gray-500"
