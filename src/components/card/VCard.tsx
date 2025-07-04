@@ -38,10 +38,149 @@ export const VCard = () => {
     setActiveTab(tab);
   };
 
-  const handleAddToContacts = (e: React.MouseEvent) => {
+  const handleAddToContacts = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Aquí puedes agregar la lógica para añadir contacto
-    alert("¡Contacto agregado!");
+    
+    // Validar si hay número de teléfono
+    const phoneNumber = userData?.NroCelular;
+    if (!phoneNumber || phoneNumber.trim() === "" || phoneNumber === "-------") {
+      alert("❌ No hay número de teléfono disponible para agregar a contactos.");
+      return;
+    }
+
+    // Preparar datos del contacto
+    const contactName = `${displayValue(userData?.Nombres)} ${displayValue(userData?.Apellidos)}`.trim();
+    const contactOrg = displayValue(userData?.Empresa, "");
+    const contactEmail = userData?.Email || "";
+
+    try {
+      // Método 1: Intentar usar la API nativa de contactos (Chrome Android principalmente)
+      if ('contacts' in navigator && 'ContactsManager' in window) {
+        try {
+          await ((navigator as unknown as { contacts: { select: (properties: string[], options: { multiple: boolean }) => Promise<void> } }).contacts.select(['name', 'tel', 'email'], { multiple: false }));
+          alert(`✅ Se ha iniciado el proceso para agregar "${contactName}" a tus contactos.`);
+          return;
+        } catch (contactApiError) {
+          console.log('API de contactos no disponible o falló:', contactApiError);
+        }
+      }
+
+      // Método 2: Usar esquemas de URL para abrir la app de contactos directamente
+      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        if (isIOS) {
+          // Para iOS: usar esquema de URL para abrir Contactos
+          const contactURL = `https://contacts.apple.com/add?firstName=${encodeURIComponent(userData?.Nombres || '')}&lastName=${encodeURIComponent(userData?.Apellidos || '')}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(contactEmail)}&organization=${encodeURIComponent(contactOrg)}`;
+          
+          // Intentar abrir directamente
+          window.open(contactURL, '_blank');
+          
+          // Mensaje alternativo para iOS
+          setTimeout(() => {
+            if (confirm("📱 ¿Se abrió la app de Contactos? Si no, ¿quieres que descargue el archivo de contacto?")) {
+              // Si el usuario dice que no se abrió, usar fallback
+              const vCard = createVCard({
+                name: contactName,
+                organization: contactOrg,
+                tel: phoneNumber,
+                email: contactEmail,
+                url: userData?.LinkedInUrl || userData?.WebSyte || ""
+              });
+              downloadVCard(vCard, contactName);
+            }
+          }, 2000);
+          
+        } else if (isAndroid) {
+          // Para Android: usar Intent implícito
+          const intentURL = `intent://contacts/people/#Intent;action=android.intent.action.INSERT;type=vnd.android.cursor.dir%2Fperson;S.name=${encodeURIComponent(contactName)};S.phone=${encodeURIComponent(phoneNumber)};S.email=${encodeURIComponent(contactEmail)};S.company=${encodeURIComponent(contactOrg)};end`;
+          
+          try {
+            window.location.href = intentURL;
+            alert("📱 Abriendo la app de Contactos para agregar el contacto...");
+          } catch {
+            // Fallback para Android
+            const telURL = `tel:${phoneNumber}`;
+            window.open(telURL, '_blank');
+            alert(`📞 Se ha abierto el marcador con el número de ${contactName}. Puedes guardarlo desde ahí.`);
+          }
+        } else {
+          // Otros móviles: abrir marcador
+          const telURL = `tel:${phoneNumber}`;
+          window.open(telURL, '_blank');
+          alert(`📞 Se ha abierto el marcador con el número de ${contactName}.`);
+        }
+      } else {
+        // Método 3: Para desktop, intentar Web Share API o fallback a vCard
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: `Contacto: ${contactName}`,
+              text: `${contactName}\n${contactOrg}\nTeléfono: ${phoneNumber}\nEmail: ${contactEmail}`,
+              url: window.location.href
+            });
+            alert("✅ Información de contacto compartida exitosamente.");
+          } catch {
+            // Fallback a vCard
+            createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
+          }
+        } else {
+          // Fallback a vCard
+          createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
+        }
+      }
+    } catch (error) {
+      console.error('Error al agregar contacto:', error);
+      // Último fallback: vCard
+      createAndDownloadVCard(contactName, contactOrg, phoneNumber, contactEmail);
+    }
+  };
+
+  // Función auxiliar para crear y descargar vCard
+  const createAndDownloadVCard = (contactName: string, contactOrg: string, phoneNumber: string, contactEmail: string) => {
+    const vCard = createVCard({
+      name: contactName,
+      organization: contactOrg,
+      tel: phoneNumber,
+      email: contactEmail,
+      url: userData?.LinkedInUrl || userData?.WebSyte || ""
+    });
+    downloadVCard(vCard, contactName);
+    alert(`💻 Se ha descargado el archivo de contacto "${contactName}.vcf". Ábrelo para agregarlo a tus contactos.`);
+  };
+
+  // Función para crear vCard
+  const createVCard = (contact: {
+    name: string;
+    organization: string;
+    tel: string;
+    email: string;
+    url: string;
+  }) => {
+    const vCard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.name}
+ORG:${contact.organization}
+TEL:${contact.tel}
+EMAIL:${contact.email}
+URL:${contact.url}
+END:VCARD`;
+    return vCard;
+  };
+
+  // Función para descargar vCard
+  const downloadVCard = (vCardContent: string, contactName: string) => {
+    const blob = new Blob([vCardContent], { type: 'text/vcard' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${contactName.replace(/\s+/g, '_')}.vcf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   };
 
   const handleLinkedInClick = (e: React.MouseEvent) => {
@@ -249,12 +388,27 @@ export const VCard = () => {
               {/* Botón Add to contacts en la sección Socials */}
               <button
                 onClick={handleAddToContacts}
-                className="contact-button flex items-center justify-center space-x-3 w-full bg-green-500/20 hover:bg-green-500/30 rounded-lg transition-all border border-green-400/30 py-3"
+                className={`contact-button flex items-center justify-center space-x-3 w-full rounded-lg transition-all border py-3 ${
+                  userData?.NroCelular && userData.NroCelular !== "-------"
+                    ? "bg-green-500/20 hover:bg-green-500/30 border-green-400/30"
+                    : "bg-gray-500/20 hover:bg-gray-500/30 border-gray-400/30"
+                }`}
               >
-                <FiPlusCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
+                <FiPlusCircle className={`w-5 h-5 sm:w-6 sm:h-6 ${
+                  userData?.NroCelular && userData.NroCelular !== "-------"
+                    ? "text-green-400"
+                    : "text-gray-400"
+                }`} />
                 <div className="text-center">
-                  <p className="text-sm sm:text-base font-medium text-green-400">
-                    Agregar Contacto
+                  <p className={`text-sm sm:text-base font-medium ${
+                    userData?.NroCelular && userData.NroCelular !== "-------"
+                      ? "text-green-400"
+                      : "text-gray-400"
+                  }`}>
+                    {userData?.NroCelular && userData.NroCelular !== "-------"
+                      ? "Agregar Contacto"
+                      : "Sin teléfono disponible"
+                    }
                   </p>
                 </div>
               </button>
