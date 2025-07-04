@@ -1,5 +1,30 @@
 # Configuración Backend Django para Firebase
 
+> **📋 Estructura de Datos Sincronizada**  
+> Esta documentación está sincronizada con la interfaz `UserData` del frontend React. 
+> Todos los modelos, serializers y ejemplos reflejan la estructura exacta utilizada en el frontend.
+
+## Resumen de la estructura UserData
+
+```typescript
+interface UserData {
+  Nombres: string;
+  Apellidos: string;
+  Cargo: string;
+  CreatedAt: string;
+  Email: string;
+  Empresa: string;
+  FechaNac: string;
+  IsActive: string;
+  LinkedInUrl: string;
+  NroCelular: string;
+  PhotoUrl: string;
+  City?: string;
+  TipoSangre: string;
+  WebSyte: string;
+}
+```
+
 ## Instalación de dependencias
 
 ```bash
@@ -79,45 +104,66 @@ def get_firestore_client():
 # models.py
 from django.db import models
 import uuid
+from datetime import datetime
 
 class User(models.Model):
     uid = models.CharField(max_length=255, unique=True, default=uuid.uuid4)
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone = models.CharField(max_length=20, blank=True)
-    company = models.CharField(max_length=255, blank=True)
-    position = models.CharField(max_length=255, blank=True)
-    bio = models.TextField(blank=True)
-    avatar = models.URLField(blank=True)
-    website = models.URLField(blank=True)
-    linkedin = models.URLField(blank=True)
-    twitter = models.URLField(blank=True)
-    instagram = models.URLField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # Campos principales (se corresponden con la interfaz UserData del frontend)
+    nombres = models.CharField(max_length=255, verbose_name="Nombres")
+    apellidos = models.CharField(max_length=255, verbose_name="Apellidos")
+    cargo = models.CharField(max_length=255, blank=True, verbose_name="Cargo")
+    email = models.EmailField(verbose_name="Email")
+    empresa = models.CharField(max_length=255, blank=True, verbose_name="Empresa")
+    nro_celular = models.CharField(max_length=20, blank=True, verbose_name="Número Celular")
+    
+    # Fechas y datos adicionales
+    fecha_nac = models.CharField(max_length=50, blank=True, verbose_name="Fecha de Nacimiento")
+    created_at = models.BigIntegerField(verbose_name="Fecha de Creación (Unix timestamp)")
+    is_active = models.CharField(max_length=10, default="true", verbose_name="Activo")
+    
+    # URLs y enlaces
+    photo_url = models.URLField(blank=True, verbose_name="URL de Foto")
+    linkedin_url = models.URLField(blank=True, verbose_name="URL de LinkedIn")
+    web_syte = models.URLField(blank=True, verbose_name="Sitio Web")
+    
+    # Información adicional
+    city = models.CharField(max_length=255, blank=True, verbose_name="Ciudad")
+    tipo_sangre = models.CharField(max_length=10, blank=True, verbose_name="Tipo de Sangre")
+    
+    # Campos de control de Django
+    created_at_django = models.DateTimeField(auto_now_add=True)
+    updated_at_django = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+        
+    def __str__(self):
+        return f"{self.nombres} {self.apellidos}"
+    
+    def save(self, *args, **kwargs):
+        # Generar timestamp Unix para created_at si no existe
+        if not self.created_at:
+            self.created_at = int(datetime.now().timestamp())
+        super().save(*args, **kwargs)
 
     def to_firestore_dict(self):
-        """Convertir a diccionario para Firestore"""
+        """Convertir a diccionario compatible con la interfaz UserData del frontend"""
         return {
-            'name': self.name,
-            'email': self.email,
-            'phone': self.phone,
-            'company': self.company,
-            'position': self.position,
-            'bio': self.bio,
-            'avatar': self.avatar,
-            'contact': {
-                'email': self.email,
-                'phone': self.phone,
-                'website': self.website
-            },
-            'socials': {
-                'linkedin': self.linkedin,
-                'twitter': self.twitter,
-                'instagram': self.instagram
-            },
-            'createdAt': self.created_at.isoformat() if self.created_at else None,
-            'updatedAt': self.updated_at.isoformat() if self.updated_at else None
+            'Nombres': self.nombres,
+            'Apellidos': self.apellidos,
+            'Cargo': self.cargo,
+            'CreatedAt': str(self.created_at),  # Como string para compatibilidad
+            'Email': self.email,
+            'Empresa': self.empresa,
+            'FechaNac': self.fecha_nac,
+            'IsActive': self.is_active,
+            'LinkedInUrl': self.linkedin_url,
+            'NroCelular': self.nro_celular,
+            'PhotoUrl': self.photo_url,
+            'City': self.city,
+            'TipoSangre': self.tipo_sangre,
+            'WebSyte': self.web_syte
         }
 ```
 
@@ -173,6 +219,70 @@ class FirestoreService:
             raise e
 ```
 
+### 4.1. Serializers
+
+```python
+# serializers.py
+from rest_framework import serializers
+from .models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    # Campos de solo lectura calculados
+    created_at_formatted = serializers.SerializerMethodField()
+    full_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = [
+            'uid', 'nombres', 'apellidos', 'cargo', 'email', 'empresa',
+            'nro_celular', 'fecha_nac', 'created_at', 'is_active',
+            'photo_url', 'linkedin_url', 'web_syte', 'city', 'tipo_sangre',
+            'created_at_django', 'updated_at_django',
+            # Campos calculados
+            'created_at_formatted', 'full_name'
+        ]
+        read_only_fields = ['uid', 'created_at_django', 'updated_at_django']
+    
+    def get_created_at_formatted(self, obj):
+        """Formatear fecha de creación desde Unix timestamp"""
+        try:
+            from datetime import datetime
+            timestamp = int(obj.created_at)
+            date = datetime.fromtimestamp(timestamp)
+            return date.strftime("%B %Y")  # Ej: "Enero 2020"
+        except (ValueError, TypeError):
+            return "Fecha no disponible"
+    
+    def get_full_name(self, obj):
+        """Nombre completo"""
+        return f"{obj.nombres} {obj.apellidos}".strip()
+
+class UserFirestoreSerializer(serializers.ModelSerializer):
+    """Serializer específico para estructura Firestore/Frontend"""
+    Nombres = serializers.CharField(source='nombres')
+    Apellidos = serializers.CharField(source='apellidos')
+    Cargo = serializers.CharField(source='cargo')
+    CreatedAt = serializers.CharField(source='created_at')
+    Email = serializers.EmailField(source='email')
+    Empresa = serializers.CharField(source='empresa')
+    FechaNac = serializers.CharField(source='fecha_nac')
+    IsActive = serializers.CharField(source='is_active')
+    LinkedInUrl = serializers.URLField(source='linkedin_url')
+    NroCelular = serializers.CharField(source='nro_celular')
+    PhotoUrl = serializers.URLField(source='photo_url')
+    City = serializers.CharField(source='city')
+    TipoSangre = serializers.CharField(source='tipo_sangre')
+    WebSyte = serializers.URLField(source='web_syte')
+    
+    class Meta:
+        model = User
+        fields = [
+            'Nombres', 'Apellidos', 'Cargo', 'CreatedAt', 'Email', 'Empresa',
+            'FechaNac', 'IsActive', 'LinkedInUrl', 'NroCelular', 'PhotoUrl',
+            'City', 'TipoSangre', 'WebSyte'
+        ]
+```
+
 ### 5. Views y APIs
 
 ```python
@@ -181,7 +291,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserFirestoreSerializer
 from .services import FirestoreService
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -191,6 +301,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.firestore_service = FirestoreService()
+    
+    def get_serializer_class(self):
+        """Usar serializer específico según la acción"""
+        if self.action in ['firestore_format']:
+            return UserFirestoreSerializer
+        return UserSerializer
     
     def create(self, request, *args, **kwargs):
         """Crear usuario en Django y Firestore"""
@@ -264,6 +380,23 @@ class UserViewSet(viewsets.ModelViewSet):
                 {'error': f'Error sincronizando: {str(e)}'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+    
+    @action(detail=True, methods=['get'])
+    def firestore_format(self, request, pk=None):
+        """Obtener usuario en formato compatible con frontend (UserData)"""
+        user = self.get_object()
+        serializer = UserFirestoreSerializer(user)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def export_firestore_format(self, request):
+        """Exportar todos los usuarios en formato Firestore"""
+        users = self.get_queryset()
+        serializer = UserFirestoreSerializer(users, many=True)
+        return Response({
+            'count': users.count(),
+            'users': serializer.data
+        })
 ```
 
 ### 6. Signals para sincronización automática
@@ -341,6 +474,7 @@ from django.test import TestCase
 from .models import User
 from .services import FirestoreService
 import uuid
+from datetime import datetime
 
 class FirestoreIntegrationTest(TestCase):
     def setUp(self):
@@ -348,28 +482,92 @@ class FirestoreIntegrationTest(TestCase):
         self.test_uid = str(uuid.uuid4())
     
     def test_create_user_in_firestore(self):
-        """Test crear usuario en Firestore"""
+        """Test crear usuario en Firestore con estructura UserData"""
         user_data = {
-            'name': 'Test User',
-            'email': 'test@example.com',
-            'phone': '+1234567890'
+            'Nombres': 'Juan Carlos',
+            'Apellidos': 'Pérez González',
+            'Cargo': 'Director Ejecutivo',
+            'Email': 'juan.perez@ajejobs.com',
+            'Empresa': 'AJE JOBS',
+            'NroCelular': '+593987654321',
+            'FechaNac': '15 de Marzo',
+            'IsActive': 'true',
+            'LinkedInUrl': 'https://linkedin.com/in/juan-perez',
+            'PhotoUrl': 'https://firebasestorage.googleapis.com/...',
+            'City': 'Quito',
+            'TipoSangre': 'O+',
+            'WebSyte': 'https://www.ajejobs.com',
+            'CreatedAt': str(int(datetime.now().timestamp()))
         }
         
         uid = self.firestore_service.create_user(user_data, self.test_uid)
         self.assertEqual(uid, self.test_uid)
     
     def test_django_to_firestore_sync(self):
-        """Test sincronización Django -> Firestore"""
+        """Test sincronización Django -> Firestore con campos actualizados"""
         user = User.objects.create(
             uid=self.test_uid,
-            name='Test User',
-            email='test@example.com'
+            nombres='María Elena',
+            apellidos='García López',
+            cargo='Gerente de Recursos Humanos',
+            email='maria.garcia@ajejobs.com',
+            empresa='AJE JOBS',
+            nro_celular='+593998765432',
+            fecha_nac='22 de Julio',
+            linkedin_url='https://linkedin.com/in/maria-garcia',
+            city='Guayaquil',
+            tipo_sangre='A+',
+            web_syte='https://www.ajejobs.com'
         )
         
         # La sincronización debería ocurrir automáticamente por signals
-        # Verificar manualmente si es necesario
         result = self.firestore_service.sync_user_to_firestore(user)
         self.assertEqual(result, self.test_uid)
+    
+    def test_firestore_dict_structure(self):
+        """Test que to_firestore_dict() genere estructura correcta"""
+        user = User(
+            nombres='Pedro',
+            apellidos='Rodríguez',
+            cargo='Desarrollador Senior',
+            email='pedro@example.com',
+            empresa='Tech Corp',
+            nro_celular='+593912345678',
+            created_at=1640995200  # 1 de enero 2022
+        )
+        
+        firestore_dict = user.to_firestore_dict()
+        
+        # Verificar que tenga todos los campos esperados
+        expected_fields = [
+            'Nombres', 'Apellidos', 'Cargo', 'CreatedAt', 'Email', 'Empresa',
+            'FechaNac', 'IsActive', 'LinkedInUrl', 'NroCelular', 'PhotoUrl',
+            'City', 'TipoSangre', 'WebSyte'
+        ]
+        
+        for field in expected_fields:
+            self.assertIn(field, firestore_dict)
+        
+        # Verificar valores específicos
+        self.assertEqual(firestore_dict['Nombres'], 'Pedro')
+        self.assertEqual(firestore_dict['Apellidos'], 'Rodríguez')
+        self.assertEqual(firestore_dict['CreatedAt'], '1640995200')
+    
+    def test_unix_timestamp_creation(self):
+        """Test que se genere timestamp Unix automáticamente"""
+        user = User.objects.create(
+            nombres='Ana',
+            apellidos='Martínez',
+            email='ana@example.com'
+        )
+        
+        # Verificar que created_at se generó automáticamente
+        self.assertIsNotNone(user.created_at)
+        self.assertIsInstance(user.created_at, int)
+        
+        # Verificar que es un timestamp válido (aproximadamente actual)
+        current_timestamp = int(datetime.now().timestamp())
+        self.assertAlmostEqual(user.created_at, current_timestamp, delta=60)  # Diferencia máxima de 1 minuto
     
     def tearDown(self):
         """Limpiar datos de prueba"""
@@ -410,12 +608,242 @@ class Command(BaseCommand):
         )
 ```
 
-## Uso
+## Ejemplos de uso de la API
+
+### Crear usuario con estructura UserData
+
+```python
+# POST /api/users/
+{
+    "nombres": "Juan Carlos",
+    "apellidos": "Pérez González",
+    "cargo": "Director Ejecutivo",
+    "email": "juan.perez@ajejobs.com",
+    "empresa": "AJE JOBS",
+    "nro_celular": "+593987654321",
+    "fecha_nac": "15 de Marzo",
+    "linkedin_url": "https://linkedin.com/in/juan-perez",
+    "photo_url": "https://firebasestorage.googleapis.com/v0/b/card-unity.firebasestorage.app/o/unity_credentials%2Fquality%3D100%20(3).png?alt=media&token=30a1f93f-2325-4bbd-a21f-04ff24efd94f",
+    "city": "Quito",
+    "tipo_sangre": "O+",
+    "web_syte": "https://www.ajejobs.com"
+}
+```
+
+### Obtener usuario en formato Firestore (compatible con frontend)
+
+```python
+# GET /api/users/{id}/firestore_format/
+{
+    "Nombres": "Juan Carlos",
+    "Apellidos": "Pérez González", 
+    "Cargo": "Director Ejecutivo",
+    "CreatedAt": "1640995200",
+    "Email": "juan.perez@ajejobs.com",
+    "Empresa": "AJE JOBS",
+    "FechaNac": "15 de Marzo",
+    "IsActive": "true",
+    "LinkedInUrl": "https://linkedin.com/in/juan-perez",
+    "NroCelular": "+593987654321",
+    "PhotoUrl": "https://firebasestorage.googleapis.com/...",
+    "City": "Quito",
+    "TipoSangre": "O+",
+    "WebSyte": "https://www.ajejobs.com"
+}
+```
+
+### Exportar todos los usuarios en formato Firestore
+
+```python
+# GET /api/users/export_firestore_format/
+{
+    "count": 25,
+    "users": [
+        {
+            "Nombres": "Juan Carlos",
+            "Apellidos": "Pérez González",
+            // ... resto de campos
+        },
+        {
+            "Nombres": "María Elena", 
+            "Apellidos": "García López",
+            // ... resto de campos
+        }
+    ]
+}
+```
+
+## Migración de datos existentes
+
+Si ya tienes datos con estructura antigua, aquí tienes un script de migración:
+
+```python
+# management/commands/migrate_user_data.py
+from django.core.management.base import BaseCommand
+from your_app.models import User
+from datetime import datetime
+
+class Command(BaseCommand):
+    help = 'Migrar datos de usuarios a nueva estructura UserData'
+    
+    def handle(self, *args, **options):
+        users = User.objects.all()
+        
+        for user in users:
+            updated = False
+            
+            # Migrar campos antiguos a nuevos
+            if hasattr(user, 'name') and not user.nombres:
+                name_parts = user.name.split(' ', 1)
+                user.nombres = name_parts[0]
+                user.apellidos = name_parts[1] if len(name_parts) > 1 else ''
+                updated = True
+            
+            if hasattr(user, 'position') and not user.cargo:
+                user.cargo = user.position
+                updated = True
+                
+            if hasattr(user, 'company') and not user.empresa:
+                user.empresa = user.company
+                updated = True
+                
+            if hasattr(user, 'phone') and not user.nro_celular:
+                user.nro_celular = user.phone
+                updated = True
+                
+            if hasattr(user, 'linkedin') and not user.linkedin_url:
+                user.linkedin_url = user.linkedin
+                updated = True
+                
+            if hasattr(user, 'avatar') and not user.photo_url:
+                user.photo_url = user.avatar
+                updated = True
+                
+            if hasattr(user, 'website') and not user.web_syte:
+                user.web_syte = user.website
+                updated = True
+            
+            # Generar timestamp Unix si no existe
+            if not user.created_at:
+                if hasattr(user, 'created_at_django') and user.created_at_django:
+                    user.created_at = int(user.created_at_django.timestamp())
+                else:
+                    user.created_at = int(datetime.now().timestamp())
+                updated = True
+            
+            if updated:
+                user.save()
+                self.stdout.write(
+                    self.style.SUCCESS(f'✅ Usuario {user.uid} migrado')
+                )
+        
+        self.stdout.write(
+            self.style.SUCCESS(f'Migración completada. {users.count()} usuarios procesados.')
+        )
+```
 
 ```bash
-# Sincronizar todos los usuarios
+# Ejecutar migración
+python manage.py migrate_user_data
+```
+
+## Validación de sincronización Frontend-Backend
+
+Para asegurar que la estructura de datos esté siempre sincronizada, puedes usar estos comandos:
+
+### Script de validación de estructura
+
+```python
+# management/commands/validate_structure.py
+from django.core.management.base import BaseCommand
+from your_app.models import User
+import json
+
+class Command(BaseCommand):
+    help = 'Validar que la estructura Django esté sincronizada con UserData del frontend'
+    
+    def handle(self, *args, **options):
+        # Estructura esperada del frontend
+        expected_fields = [
+            'Nombres', 'Apellidos', 'Cargo', 'CreatedAt', 'Email', 'Empresa',
+            'FechaNac', 'IsActive', 'LinkedInUrl', 'NroCelular', 'PhotoUrl',
+            'City', 'TipoSangre', 'WebSyte'
+        ]
+        
+        # Crear usuario de prueba
+        test_user = User(
+            nombres='Test',
+            apellidos='User',
+            email='test@example.com',
+            created_at=1640995200
+        )
+        
+        # Obtener estructura generada
+        firestore_dict = test_user.to_firestore_dict()
+        
+        # Validar campos
+        missing_fields = []
+        for field in expected_fields:
+            if field not in firestore_dict:
+                missing_fields.append(field)
+        
+        extra_fields = []
+        for field in firestore_dict.keys():
+            if field not in expected_fields:
+                extra_fields.append(field)
+        
+        # Mostrar resultados
+        if not missing_fields and not extra_fields:
+            self.stdout.write(
+                self.style.SUCCESS('✅ Estructura sincronizada correctamente con frontend')
+            )
+        else:
+            if missing_fields:
+                self.stdout.write(
+                    self.style.ERROR(f'❌ Campos faltantes: {missing_fields}')
+                )
+            if extra_fields:
+                self.stdout.write(
+                    self.style.WARNING(f'⚠️ Campos extra: {extra_fields}')
+                )
+        
+        # Mostrar estructura actual
+        self.stdout.write('\n📋 Estructura actual:')
+        self.stdout.write(json.dumps(firestore_dict, indent=2, ensure_ascii=False))
+```
+
+```bash
+# Ejecutar validación
+python manage.py validate_structure
+```
+
+### Checklist de sincronización
+
+Antes de hacer cambios en la estructura de datos, verifica:
+
+- [ ] La interfaz `UserData` en `src/interfaces/user.interface.ts`
+- [ ] El modelo `User` en Django tiene todos los campos correspondientes
+- [ ] El método `to_firestore_dict()` mapea todos los campos correctamente
+- [ ] Los serializers `UserFirestoreSerializer` incluyen todos los campos
+- [ ] Los tests validan la nueva estructura
+- [ ] La documentación está actualizada
+
+### Comandos útiles para desarrollo
+
+```bash
+# Sincronizar todos los usuarios a Firestore
 python manage.py sync_all_users
 
-# Ejecutar tests
+# Validar estructura de datos
+python manage.py validate_structure
+
+# Migrar datos antiguos
+python manage.py migrate_user_data
+
+# Ejecutar tests de integración con Firestore
 python manage.py test your_app.tests.FirestoreIntegrationTest
 ```
+
+---
+
+**📝 Nota**: Esta documentación se actualiza automáticamente cuando se modifica la interfaz `UserData` del frontend. Asegúrate de mantener ambas estructuras sincronizadas.

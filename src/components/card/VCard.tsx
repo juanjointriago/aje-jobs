@@ -595,14 +595,14 @@ END:VCARD`;
 
             {/* Fondo con tema dinámico */}
             <div
-              className={`h-full min-h-screen md:min-h-0 flex flex-col items-center justify-between relative px-1 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-1 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
+              className={`h-full min-h-screen md:min-h-0 flex flex-col items-center justify-between relative px-2 sm:px-4 md:px-6 lg:px-8 xl:px-12 py-2 sm:py-6 md:py-8 lg:py-10 xl:py-12 transition-colors duration-300 ${
                 isDarkMode ? "bg-black text-white" : "bg-white text-gray-800"
               }`}
             >
               {/* Avatar o Ícono de Persona Superior */}
-              <div className="flex flex-col items-center mt-1 sm:mt-4 md:mt-6 lg:mt-8">
+              <div className="flex flex-col items-center mt-2 sm:mt-4 md:mt-6 lg:mt-8">
                 <div
-                  className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-2 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
+                  className={`w-12 h-12 sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 person-icon-container rounded-2xl flex items-center justify-center mb-3 sm:mb-6 md:mb-8 lg:mb-10 xl:mb-12 ${
                     isDarkMode
                       ? "bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600"
                       : "bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-500"
@@ -613,14 +613,14 @@ END:VCARD`;
               </div>
 
               {/* Contenido Dinámico según la Pestaña - Mantener posición */}
-              <div className="flex-1 flex flex-col justify-center items-center">
+              <div className="flex-1 flex flex-col justify-center items-center px-2">
                 {renderTabContent()}
               </div>
 
               {/* Pestañas Inferiores */}
-              <div className="w-full">
+              <div className="w-full pb-2 sm:pb-0">
                 <div
-                  className={`tab-container flex justify-center space-x-1 rounded-lg p-1 ${
+                  className={`tab-container flex justify-center space-x-1 rounded-lg p-1.5 mx-2 sm:mx-0 ${
                     isDarkMode
                       ? "bg-white/10 border border-white/20"
                       : "bg-gray-300/80 border border-gray-400/50"
@@ -628,7 +628,7 @@ END:VCARD`;
                 >
                   <button
                     onClick={(e) => handleTabClick(e, "contact")}
-                    className={`flex-1 rounded-md font-medium py-2 px-3 transition-all text-sm ${
+                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
                       activeTab === "contact"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
@@ -642,7 +642,7 @@ END:VCARD`;
                   </button>
                   <button
                     onClick={(e) => handleTabClick(e, "company")}
-                    className={`flex-1 rounded-md font-medium py-2 px-3 transition-all text-sm ${
+                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
                       activeTab === "company"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
@@ -656,7 +656,7 @@ END:VCARD`;
                   </button>
                   <button
                     onClick={(e) => handleTabClick(e, "socials")}
-                    className={`flex-1 rounded-md font-medium py-2 px-3 transition-all text-sm ${
+                    className={`flex-1 rounded-md font-medium py-2.5 px-2 sm:px-3 transition-all text-xs sm:text-sm ${
                       activeTab === "socials"
                         ? isDarkMode
                           ? "bg-white text-black shadow-sm"
